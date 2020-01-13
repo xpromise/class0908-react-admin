@@ -6,6 +6,24 @@ import { message } from 'antd';
 export default function Test() {
   // 配置axios拦截器
 
+  /*
+    拦截器：
+      是一个拦截请求/响应的函数
+      作用：
+        作为请求拦截器：设置公共的请求头 / 参数...
+        作为响应拦截器：
+      执行流程；
+        1. 执行请求拦截器函数
+        2. 发送请求
+        3. 执行响应拦截器函数（接受到了响应）
+        4. 执行 axiosInstance().then()/catch() 
+
+    axios发送POST请求，
+      默认的content-type： application/json 请求体是json
+      有可能发送POST请求，需要的Content-type是 application/x-www-form-urlencoded
+
+  */
+
   // 自己创建axios实例，可以修改axios默认配置
   const axiosInstance = axios.create({
     baseURL: '/api', // 基础路径（公共路径）: 后面所有请求路径都会以 baseURL 开头
@@ -28,6 +46,30 @@ export default function Test() {
       // console.log(config);
       if (token) {
         config.headers.authorization = `Bearer ${token}`;
+      }
+
+      /*
+        看接口是否是必须使用'application/x-www-form-urlencoded'发送请求
+      */
+      if (config.method === 'post') {
+        // 修改请求参数
+        /*
+        {
+          username: 'admin',
+          password: 'admin'
+        }
+          --->  'username=admin&password=admin'
+        */
+        // ['username', 'password']
+        const keys = Object.keys(config.data);
+        const data = keys
+          .reduce((prev, curr) => {
+            prev += `&${curr}=${config.data[curr]}`;
+            return prev;
+          }, '')
+          .slice(1);
+        config.data = data;
+        config.headers['content-type'] = 'application/x-www-form-urlencoded';
       }
 
       return config;
@@ -60,7 +102,11 @@ export default function Test() {
       data: {
         username: 'admin',
         password: 'admin'
-      }
+      },
+      // data: 'username=admin&password=admin',
+      /* headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      } */
     })
       .then(response => {
         console.log(response);
