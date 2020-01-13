@@ -30,4 +30,24 @@
 			* 有可能提交失败
 				* 网络问题 （等等试试）
 				* 本地没有进行版本控制 
-				* 远程仓库有更新 git pull origin xxx 
+				* 远程仓库有更新 git pull origin xxx 、
+
+## Login组件
+* 静态组件
+* 动态组件
+	* 表单校验
+		* 首先组件需要得到form属性： 
+			* Form.create()(Login)
+			* 高阶组件：给被包装组件传递form属性	
+			* form: getFieldDecorator/resetFields/validateFields...			
+		* getFieldDecorator('username', { rules: [ { required: true, message: 'xxx' } ] })(<Input />) 一般用于简单表单校验规则（只有一条规则）
+		* getFieldDecorator('username', { rules: [ { validator: this.validator } ] })(<Input />)  一般用于复杂表单校验规则（有多条校验规则）
+	* 登录功能
+		* 解决跨域：服务器代理
+			* 工作原理：
+				* 客户端发送请求到代理服务器(3000),由代理服务器转发请求到目标服务器上
+				* 目标服务器将响应给代理服务器，代理服务器将响应内容转发给客户端
+				* 客户端和代理服务器符合同源策略，没有跨域问题。 代理服务器和目标服务器又不存在跨域问题。		
+			* 使用
+				* 在 package.json 加上 proxy: "目标服务器地址"	
+				* 修改package.json, 要重启项目
