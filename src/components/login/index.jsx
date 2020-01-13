@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, Icon } from 'antd';
+import { Form, Input, Button, Icon, message } from 'antd';
 import axios from 'axios';
 // 图片必须引入，才会被webpack打包
 import logo from './logo.png';
@@ -60,18 +60,36 @@ class Login extends Component {
         // 表单校验成功
         const { username, password } = values;
         // 发送请求，请求登录
-        axios.post('/api/login', { username, password })
-          .then((response) => {
+        axios
+          .post('/api/login', { username, password })
+          .then(response => {
             // 请求成功
 
             // 判断是否登录成功
-
-            console.log(response);
+            if (response.data.status === 0) {
+              // 登录成功
+              // 跳转到home页面
+              // 不能跳转（只能用于render方法中） 路由链接跳转
+              // return <Redirect to="/" />
+              // 编程式导航（用于非render方法中）
+              this.props.history.replace('/');
+            } else {
+              // 登录失败
+              // 提示错误
+              message.error(response.data.msg);
+              // 清空密码
+              this.props.form.resetFields(['password']);
+            }
           })
-          .catch((err) => {
+          .catch(err => {
+            // 请求失败
             console.log(err);
-          })
-      } 
+            // 提示错误
+            message.error('网络错误~');
+            // 清空密码
+            this.props.form.resetFields(['password']);
+          });
+      }
     });
   };
 
