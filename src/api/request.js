@@ -14,13 +14,13 @@ const axiosInstance = axios.create({
   }
 });
 
-// 设置请求拦截器函数
+// 设置拦截器函数
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(config => {
   /*
-      设置公共的参数
-    */
+    设置公共的参数
+  */
 
   // 问题: 需要处理token
   let token = '';
@@ -30,10 +30,10 @@ axiosInstance.interceptors.request.use(config => {
   }
 
   /*
-      如果是POST请求。需要开发者检查请求头是：application/json  applicaion/x-www-form-urlencoded
-      如果是 application/json ， 就不用处理（因为axios默认值就是这个）
-      如果是 application/x-www-form-urlencoded，就需要对请求参数进行urlencoded转换
-    */
+    如果是POST请求。需要开发者检查请求头是：application/json  applicaion/x-www-form-urlencoded
+    如果是 application/json ， 就不用处理（因为axios默认值就是这个）
+    如果是 application/x-www-form-urlencoded，就需要对请求参数进行urlencoded转换
+  */
   if (config.method === 'post') {
     config.data = Object.keys(config.data)
       .reduce((p, c) => {
@@ -85,6 +85,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(errMsg || '发生未知错误，请联系管理员~');
   }
 );
-
 
 export default axiosInstance;

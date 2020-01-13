@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, Icon, message } from 'antd';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { saveUserAsync } from '../../redux/actions';
 // 图片必须引入，才会被webpack打包
 import logo from './logo.png';
 import './index.less';
 
 const { Item } = Form;
 
+@connect(null, { saveUserAsync })
 @Form.create()
 class Login extends Component {
   // 自定义表单校验规则
@@ -60,7 +62,8 @@ class Login extends Component {
         // 表单校验成功
         const { username, password } = values;
         // 发送请求，请求登录
-        axios
+        //#region
+        /* axios
           .post('/api/login', { username, password })
           .then(response => {
             // 请求成功
@@ -87,6 +90,18 @@ class Login extends Component {
             // 提示错误
             message.error('网络错误~');
             // 清空密码
+            this.props.form.resetFields(['password']);
+          }); */
+        //#endregion
+
+        // 得到登录成功/失败
+        this.props
+          .saveUserAsync(username, password)
+          .then(() => {
+            this.props.history.replace('/');
+          })
+          .catch(msg => {
+            message.error(msg);
             this.props.form.resetFields(['password']);
           });
       }
