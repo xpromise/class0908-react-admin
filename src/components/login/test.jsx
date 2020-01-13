@@ -82,15 +82,84 @@ export default function Test() {
       return Promise.reject(err);
     } */
   );
+
+  /*
+      [request.fulfilled, request.rejected, dispatchRequest, undefined, response.fulfilled, response.rejected]
+
+      promise.then(
+        request.fulfilled, // 第一个回调
+        request.rejected 
+      )
+
+      [dispatchRequest, undefined, response.fulfilled, response.rejected]
+
+      promise.then(
+        dispatchRequest,
+        undefined
+      )
+
+      [response.fulfilled, response.rejected]
+
+      promise.then(
+        response.fulfilled,
+        response.rejected
+      )
+       
+      return promise
+    */
+
   // 响应拦截器(返回响应之后，触发axiosInstance.then/catch之前调用)
-  /* axiosInstance.interceptors.response.use(
+  /*
+    统一处理错误
+  */
+  axiosInstance.interceptors.response.use(
     // 请求/响应成功 --> 2xx
-    (response) => {
-      return response;
+    response => {
+      if (response.data.status === 0) {
+        return response.data.data;
+      } else {
+        // 功能失败
+        return Promise.reject(response.data.msg);
+      }
     },
     // 请求/响应失败 --> 4xx 5xx
-    () => {}
-  ); */
+    err => {
+      /*
+        Network Error 网络错误  err.message
+        err.response.status === 401  / err.message 401  没有token/token有问题
+        "timeout of 10ms exceeded" err.message  请求超时
+
+        根据不同的错误，返回不同的错误提示
+      */
+      // console.log('响应拦截器失败回调触发了~');
+      // console.dir(err);
+
+      const errCode = {
+        401: '没有权限访问当前接口',
+        403: '禁止访问当前接口',
+        404: '当前资源未找到',
+        500: '服务器发生未知错误，请联系管理员'
+      };
+
+      let errMessage = '';
+
+      if (err.response) {
+        // 说明接受到了响应，响应是失败的响应
+        // 根据响应状态码判断错误 401 403 404 500
+        errMessage = errCode[err.response.status];
+      } else {
+        // 说明没有接受到响应，请求就失败了
+
+        if (err.message.indexOf('Network Error') !== -1) {
+          errMessage = '网络连接失败，请重连网络试试~';
+        } else if (err.message.indexOf('timeout') !== -1) {
+          errMessage = '网络超时，请连上wifi重试~';
+        }
+      }
+
+      return Promise.reject(errMessage || '发生未知错误，请联系管理员');
+    }
+  );
 
   let token = '';
   let id = '';
@@ -102,7 +171,7 @@ export default function Test() {
       data: {
         username: 'admin',
         password: 'admin'
-      },
+      }
       // data: 'username=admin&password=admin',
       /* headers: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -111,16 +180,16 @@ export default function Test() {
       .then(response => {
         console.log(response);
 
-        if (response.data.status === 0) {
+        /* if (response.data.status === 0) {
           token = response.data.data.token;
           message.success('登录成功');
         } else {
           message.error(response.data.msg);
-        }
+        } */
       })
       .catch(err => {
         console.log(err);
-        message.error('网络错误');
+        message.error(err);
       });
   };
 
@@ -145,7 +214,7 @@ export default function Test() {
       })
       .catch(err => {
         console.log(err);
-        message.error('网络错误');
+        message.error(err);
       });
   };
 
