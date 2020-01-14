@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, Icon, message } from 'antd';
 import { connect } from 'react-redux';
-import { saveUserAsync } from '../../redux/actions';
+
+import { saveUserAsync } from '$redux/actions';
+import withCheckLogin from '$cont/with-check-login';
+
+
 // 图片必须引入，才会被webpack打包
 import logo from './logo.png';
 import './index.less';
 
 const { Item } = Form;
 
+@withCheckLogin
 @connect(null, { saveUserAsync })
 @Form.create()
 class Login extends Component {
@@ -167,6 +172,7 @@ class Login extends Component {
                     <Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
                   placeholder='密码'
+                  type='password'
                 />
               )}
             </Item>

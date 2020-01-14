@@ -4,6 +4,7 @@
 
 import axios from 'axios';
 import errCode from '../config/error-code';
+import store from '$redux/store';
 
 // 创建axios实例
 const axiosInstance = axios.create({
@@ -23,7 +24,7 @@ axiosInstance.interceptors.request.use(config => {
   */
 
   // 问题: 需要处理token
-  let token = '';
+  const token = store.getState().user.token;
 
   if (token) {
     config.headers.authorization = `Bearer ${token}`;
