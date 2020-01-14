@@ -1,55 +1,83 @@
 import React, { Component } from 'react';
 import { Menu, Icon } from 'antd';
+import { Link, withRouter } from 'react-router-dom';
+
+import menus from '$conf/menus';
 
 const { SubMenu, Item } = Menu;
 
-export default class LeftNav extends Component {
+// withRouter 高阶组件：给子组件传递路由组件的三大属性
+@withRouter
+class LeftNav extends Component {
+  createMenus = menus => {
+    return menus.map(menu => {
+      if (menu.children) {
+        // 二级菜单
+        return (
+          <SubMenu
+            key={menu.path}
+            title={
+              <span>
+                <Icon type={menu.icon} />
+                <span>{menu.title}</span>
+              </span>
+            }
+          >
+            {menu.children.map(cMenu => this.createMenuItem(cMenu))}
+          </SubMenu>
+        );
+      } else {
+        // 一级菜单
+        return this.createMenuItem(menu);
+      }
+    });
+  };
+
+  createMenuItem = menu => {
+    return (
+      <Item key={menu.path}>
+        <Link to={menu.path}>
+          <Icon type={menu.icon} />
+          <span>{menu.title}</span>
+        </Link>
+      </Item>
+    );
+  };
+
+  findOpenKeys = (pathname, menus) => {
+    /*
+      遍历数据，找某个元素。
+        当返回值是true，就找到了，并找到的值返回
+        当返回值是false，接着遍历找
+          直到全部遍历完，没有找到返回undefined
+    */
+    const menu = menus.find((menu) => {
+      if (menu.children) {
+        return menu.children.find((cMenu) => cMenu.path === pathname)
+      } 
+    });
+    
+    if (menu) {
+      return menu.path
+    }
+  }
+
   render() {
+    const { pathname } = this.props.location;
+
+    const openKey = this.findOpenKeys(pathname, menus);
+
     return (
       <Menu
         theme='dark' // 主题色
-        defaultSelectedKeys={['9']} // 默认选中的菜单
+        defaultSelectedKeys={[pathname]} // 默认选中的菜单
+        defaultOpenKeys={[openKey]} // 默认展开的菜单
         mode='inline'
       >
-        <Item key='1'>
-          <Icon type='home' />
-          <span>首页</span>
-        </Item>
-        <SubMenu
-          key='sub1'
-          title={
-            <span>
-              <Icon type='appstore' />
-              <span>商品</span>
-            </span>
-          }
-        >
-          <Item key='3'>
-            <Icon type='bars' />
-            <span>分类管理</span>
-          </Item>
-          <Item key='4'>
-            <Icon type='tool' />
-            <span>商品管理</span>
-          </Item>
-        </SubMenu>
-        <SubMenu
-          key='sub2'
-          title={
-            <span>
-              <Icon type='team' />
-              <span>Team</span>
-            </span>
-          }
-        >
-          <Item key='6'>Team 1</Item>
-          <Item key='8'>Team 2</Item>
-        </SubMenu>
-        <Item key='9'>
-          <Icon type='file' />
-          <span>File</span>
-        </Item>
+        {this.createMenus(menus)}
       </Menu>
     );
   }
 }
+
+export default LeftNav;
