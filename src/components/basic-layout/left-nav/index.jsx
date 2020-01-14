@@ -51,16 +51,16 @@ class LeftNav extends Component {
         当返回值是false，接着遍历找
           直到全部遍历完，没有找到返回undefined
     */
-    const menu = menus.find((menu) => {
+    const menu = menus.find(menu => {
       if (menu.children) {
-        return menu.children.find((cMenu) => cMenu.path === pathname)
-      } 
+        return menu.children.find(cMenu => cMenu.path === pathname);
+      }
     });
-    
+
     if (menu) {
-      return menu.path
+      return menu.path;
     }
-  }
+  };
 
   render() {
     const { pathname } = this.props.location;
