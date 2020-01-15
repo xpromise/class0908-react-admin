@@ -42,8 +42,6 @@ export default function withCheckLogin(WrappedComponent) {
         location: { pathname }
       } = this.props;
 
-      console.log(pathname);
-
       if (token) {
         // 登录过
         if (pathname === '/login') {

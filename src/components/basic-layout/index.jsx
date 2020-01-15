@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import LeftNav from './left-nav';
 import HeaderMain from './header-main';
