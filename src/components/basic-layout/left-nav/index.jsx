@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 
 import menus from '$conf/menus';
 
@@ -19,7 +20,7 @@ class LeftNav extends Component {
             title={
               <span>
                 <Icon type={menu.icon} />
-                <span>{menu.title}</span>
+                <FormattedMessage id={menu.title} />
               </span>
             }
           >
@@ -38,7 +39,7 @@ class LeftNav extends Component {
       <Item key={menu.path}>
         <Link to={menu.path}>
           <Icon type={menu.icon} />
-          <span>{menu.title}</span>
+          <FormattedMessage id={menu.title} />
         </Link>
       </Item>
     );
@@ -52,9 +53,12 @@ class LeftNav extends Component {
           直到全部遍历完，没有找到返回undefined
     */
     const menu = menus.find(menu => {
-      if (menu.children) {
+      /* if (menu.children) {
         return menu.children.find(cMenu => cMenu.path === pathname);
-      }
+      } */
+      return (
+        menu.children && menu.children.find(cMenu => cMenu.path === pathname)
+      );
     });
 
     if (menu) {
