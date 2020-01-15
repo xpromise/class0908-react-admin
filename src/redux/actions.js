@@ -6,7 +6,9 @@
 
 import { reqLogin } from '../api';
 import { setItem } from '../utils/storage';
-import { SAVE_USER, REMOVE_USER } from './action-types';
+import { SAVE_USER, REMOVE_USER, CHANGE_LANGUAGE } from './action-types';
+
+export const changeLanguage = lang => ({ type: CHANGE_LANGUAGE, data: lang });
 
 const saveUser = user => ({ type: SAVE_USER, data: user });
 

@@ -5,12 +5,19 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { removeItem } from '$utils/storage';
-import { removeUser } from '$redux/actions';
+import { removeUser, changeLanguage } from '$redux/actions';
 import './index.less';
 
-@connect(state => ({ username: state.user.user && state.user.user.username }), {
-  removeUser
-})
+@connect(
+  state => ({
+    username: state.user.user && state.user.user.username,
+    language: state.language
+  }),
+  {
+    removeUser,
+    changeLanguage
+  }
+)
 @withRouter
 class HeaderMain extends Component {
   state = {
@@ -54,9 +61,14 @@ class HeaderMain extends Component {
     });
   };
 
+  changeLanguage = () => {
+    const language = this.props.language === 'en' ? 'zh-CN' : 'en';
+    this.props.changeLanguage(language);
+  };
+
   render() {
     const { isScreenfull } = this.state;
-    const { username } = this.props;
+    const { username, language } = this.props;
 
     return (
       <div className='header-main'>
@@ -64,8 +76,12 @@ class HeaderMain extends Component {
           <Button size='small' onClick={this.screenFull}>
             <Icon type={isScreenfull ? 'fullscreen-exit' : 'fullscreen'} />
           </Button>
-          <Button className='header-main-lang' size='small'>
-            English
+          <Button
+            className='header-main-lang'
+            size='small'
+            onClick={this.changeLanguage}
+          >
+            {language === 'en' ? '中文' : 'English'}
           </Button>
           <span>hello, {username}~~</span>
           <Button size='small' type='link' onClick={this.logout}>
