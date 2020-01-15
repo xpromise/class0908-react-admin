@@ -13,7 +13,8 @@ const en = {
   charts: 'Charts',
   line: 'Line',
   bar: 'Bar',
-  pie: 'Pie'
+  pie: 'Pie',
+  logout: 'Are you sure you want to log out?'
 };
 
 export default en;
