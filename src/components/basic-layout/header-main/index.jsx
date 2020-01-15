@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Button, Icon, Modal } from 'antd';
 import screenfull from 'screenfull';
 import { withRouter } from 'react-router-dom';
@@ -11,76 +11,66 @@ import { removeUser, changeLanguage } from '$redux/actions';
 import menus from '$conf/menus';
 import './index.less';
 
-@injectIntl
-@connect(
-  state => ({
-    username: state.user.user && state.user.user.username,
-    language: state.language
-  }),
-  {
-    removeUser,
-    changeLanguage
-  }
-)
-@withRouter
-class HeaderMain extends Component {
-  state = {
-    isScreenfull: false,
-    date: Date.now()
-  };
+function HeaderMain({
+  username,
+  language,
+  changeLanguage,
+  location: { pathname },
+  removeUser,
+  intl,
+  history
+}) {
+  // 定义state
+  const [isScreenfull, setIsScreenfull] = useState(false);
+  const [date, setDate] = useState(Date.now());
+  // 缓存函数
+  const handleScreenFullChange = useCallback(() => {
+    setIsScreenfull(!isScreenfull);
+  }, [isScreenfull]);
 
-  componentDidMount() {
-    screenfull.on('change', this.handleScreenFullChange);
+  // 相当于生命周期函数
+  useEffect(() => {
+    // 相当于componentDidMount
+    screenfull.on('change', handleScreenFullChange);
 
-    this.timeId = setInterval(() => {
-      this.setState({
-        date: Date.now()
-      });
+    const timeId = setInterval(() => {
+      setDate(Date.now());
     }, 1000);
-  }
 
-  handleScreenFullChange = () => {
-    this.setState({
-      isScreenfull: !this.state.isScreenfull
-    });
-  };
+    return () => {
+      // 相当于componentWillUnmount
+      screenfull.off('change', handleScreenFullChange);
+      clearInterval(timeId);
+    };
+  });
 
-  componentWillUnmount() {
-    screenfull.off('change', this.handleScreenFullChange);
-
-    clearInterval(this.timeId);
-  }
-
-  screenFull = () => {
-    // 因为ESC不能触发，但是change
-    /* this.setState({
-      isScreenfull: !this.state.isScreenfull
-    }); */
+  // 缓存函数
+  const changeScreenFull = useCallback(() => {
     screenfull.toggle();
-  };
+  }, []);
 
-  logout = () => {
-    const { intl } = this.props;
+  // 缓存函数
+  const logout = useCallback(() => {
     // 显示对话框
     Modal.confirm({
       title: intl.formatMessage({ id: 'logout' }),
       onOk: () => {
         // 清空用户数据
         removeItem('user');
-        this.props.removeUser();
+        removeUser();
         // 跳转到/login
-        this.props.history.replace('/login');
+        history.replace('/login');
       }
-      // onCancel: () => {}
     });
-  };
+  }, [intl, history, removeUser]);
 
-  changeLanguage = () => {
-    const language = this.props.language === 'en' ? 'zh-CN' : 'en';
-    this.props.changeLanguage(language);
-  };
+  // 缓存函数
+  const changeLang = useCallback(() => {
+    changeLanguage(language === 'en' ? 'zh-CN' : 'en');
+  }, [language, changeLanguage]);
 
-  findTitle = (menus, pathname) => {
+  // 缓存计算结果，一上来会调用一次
+  const title = useMemo(() => {
     for (let index = 0; index < menus.length; index++) {
       const menu = menus[index];
       // 二级菜单
@@ -97,47 +87,43 @@ class HeaderMain extends Component {
         }
       }
     }
-  };
+  }, [pathname]);
 
-  render() {
-    const { isScreenfull, date } = this.state;
-    const {
-      username,
-      language,
-      location: { pathname }
-    } = this.props;
-
-    const title = this.findTitle(menus, pathname);
-
-    return (
-      <div className='header-main'>
-        <div className='header-main-top'>
-          <Button size='small' onClick={this.screenFull}>
-            <Icon type={isScreenfull ? 'fullscreen-exit' : 'fullscreen'} />
-          </Button>
-          <Button
-            className='header-main-lang'
-            size='small'
-            onClick={this.changeLanguage}
-          >
-            {language === 'en' ? '中文' : 'English'}
-          </Button>
-          <span>hello, {username}~~</span>
-          <Button size='small' type='link' onClick={this.logout}>
-            退出
-          </Button>
-        </div>
-        <div className='header-main-bottom'>
-          <span className='header-main-left'>
-            <FormattedMessage id={title} />
-          </span>
-          <span className='header-main-right'>
-            {dayjs(date).format('YYYY/MM/DD HH:mm:ss')}
-          </span>
-        </div>
+  return (
+    <div className='header-main'>
+      <div className='header-main-top'>
+        <Button size='small' onClick={changeScreenFull}>
+          <Icon type={isScreenfull ? 'fullscreen-exit' : 'fullscreen'} />
+        </Button>
+        <Button className='header-main-lang' size='small' onClick={changeLang}>
+          {language === 'en' ? '中文' : 'English'}
+        </Button>
+        <span>hello, {username}~~</span>
+        <Button size='small' type='link' onClick={logout}>
+          退出
+        </Button>
       </div>
-    );
-  }
+      <div className='header-main-bottom'>
+        <span className='header-main-left'>
+          <FormattedMessage id={title} />
+        </span>
+        <span className='header-main-right'>
+          {dayjs(date).format('YYYY/MM/DD HH:mm:ss')}
+        </span>
+      </div>
+    </div>
+  );
 }
 
-export default HeaderMain;
+export default injectIntl(
+  connect(
+    state => ({
+      username: state.user.user && state.user.user.username,
+      language: state.language
+    }),
+    {
+      removeUser,
+      changeLanguage
+    }
+  )(withRouter(HeaderMain))
+);

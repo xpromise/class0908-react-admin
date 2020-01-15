@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Menu, Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -7,10 +7,23 @@ import menus from '$conf/menus';
 
 const { SubMenu, Item } = Menu;
 
-// withRouter 高阶组件：给子组件传递路由组件的三大属性
-@withRouter
-class LeftNav extends Component {
-  createMenus = menus => {
+function LeftNav({ location: { pathname } }) {
+  const createMenuItem = useCallback(menu => {
+    return (
+      <Item key={menu.path}>
+        <Link to={menu.path}>
+          <Icon type={menu.icon} />
+          <span>
+            <FormattedMessage id={menu.title} />
+          </span>
+        </Link>
+      </Item>
+    );
+  }, []);
+
+  // 缓存内部函数计算结果
+  // 一上来就会调用一次，然后缓存计算结果
+  const menuList = useMemo(() => {
     return menus.map(menu => {
       if (menu.children) {
         // 二级菜单
@@ -20,32 +33,23 @@ class LeftNav extends Component {
             title={
               <span>
                 <Icon type={menu.icon} />
-                <FormattedMessage id={menu.title} />
+                <span>
+                  <FormattedMessage id={menu.title} />
+                </span>
               </span>
             }
           >
-            {menu.children.map(cMenu => this.createMenuItem(cMenu))}
+            {menu.children.map(cMenu => createMenuItem(cMenu))}
           </SubMenu>
         );
       } else {
         // 一级菜单
-        return this.createMenuItem(menu);
+        return createMenuItem(menu);
       }
     });
-  };
+  }, [createMenuItem]);
 
-  createMenuItem = menu => {
-    return (
-      <Item key={menu.path}>
-        <Link to={menu.path}>
-          <Icon type={menu.icon} />
-          <FormattedMessage id={menu.title} />
-        </Link>
-      </Item>
-    );
-  };
-
-  findOpenKeys = (pathname, menus) => {
+  const findOpenKeys = useCallback((pathname, menus) => {
     /*
       遍历数据，找某个元素。
         当返回值是true，就找到了，并找到的值返回
@@ -64,24 +68,21 @@ class LeftNav extends Component {
     if (menu) {
       return menu.path;
     }
-  };
+  }, []);
 
-  render() {
-    const { pathname } = this.props.location;
+  const openKey = findOpenKeys(pathname, menus);
 
-    const openKey = this.findOpenKeys(pathname, menus);
-
-    return (
-      <Menu
-        theme='dark' // 主题色
-        defaultSelectedKeys={[pathname]} // 默认选中的菜单
-        defaultOpenKeys={[openKey]} // 默认展开的菜单
-        mode='inline'
-      >
-        {this.createMenus(menus)}
-      </Menu>
-    );
-  }
+  return (
+    <Menu
+      theme='dark' // 主题色
+      defaultSelectedKeys={[pathname]} // 默认选中的菜单
+      defaultOpenKeys={[openKey]} // 默认展开的菜单
+      mode='inline'
+    >
+      {menuList}
+    </Menu>
+  );
 }
 
-export default LeftNav;
+// withRouter 高阶组件：给子组件传递路由组件的三大属性
+export default withRouter(LeftNav);
