@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useCallback } from 'react';
+=======
+import React, { Component } from 'react';
+>>>>>>> xiongjian
 import { Layout } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import LeftNav from './left-nav';

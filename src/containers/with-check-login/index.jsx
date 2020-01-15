@@ -30,6 +30,7 @@ export default function withCheckLogin(WrappedComponent) {
           访问 /login, 可以访问
       */
 
+<<<<<<< HEAD
     const {
       user: { token },
       location: { pathname }
@@ -46,6 +47,25 @@ export default function withCheckLogin(WrappedComponent) {
       if (pathname !== '/login') {
         // 跳转到主页
         return <Redirect to='/login' />;
+=======
+      const {
+        user: { token },
+        location: { pathname }
+      } = this.props;
+
+      if (token) {
+        // 登录过
+        if (pathname === '/login') {
+          // 跳转到主页
+          return <Redirect to='/' />;
+        }
+      } else {
+        // 没有登录过
+        if (pathname !== '/login') {
+          // 跳转到主页
+          return <Redirect to='/login' />;
+        }
+>>>>>>> xiongjian
       }
     }
 
