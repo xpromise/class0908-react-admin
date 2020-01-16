@@ -55,3 +55,15 @@ export const reqDeleteCategory = (categoryId) => {
     }
   });
 };
+
+// 请求获取商品数据
+export const reqGetProductList = (pageNum, pageSize) => {
+  return axiosInstance({
+    url: '/product/list',
+    method: 'GET',
+    params: {
+      pageNum,
+      pageSize
+    }
+  });
+}
