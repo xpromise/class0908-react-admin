@@ -6,7 +6,8 @@ import {
   SAVE_USER,
   REMOVE_USER,
   CHANGE_LANGUAGE,
-  GET_CATEGORY_LIST
+  GET_CATEGORY_LIST,
+  ADD_CATEGORY
 } from './action-types';
 import { getItem } from '../utils/storage';
 
@@ -37,6 +38,8 @@ function categories(prevState = initCategories, action) {
   switch (action.type) {
     case GET_CATEGORY_LIST:
       return action.data;
+    case ADD_CATEGORY:
+      return [...prevState, action.data];
     default:
       return prevState;
   }

@@ -22,3 +22,14 @@ export const reqGetCategoryList = () => {
     method: 'GET'
   });
 }
+
+// 请求添加分类数据
+export const reqAddCategory = (categoryName) => {
+  return axiosInstance({
+    url: '/category/add',
+    method: 'POST',
+    data: {
+      categoryName
+    }
+  });
+};
