@@ -8,7 +8,8 @@ import {
   CHANGE_LANGUAGE,
   GET_CATEGORY_LIST,
   ADD_CATEGORY,
-  UPDATE_CATEGORY
+  UPDATE_CATEGORY,
+  DELETE_CATEGORY
 } from './action-types';
 import { getItem } from '../utils/storage';
 
@@ -48,6 +49,8 @@ function categories(prevState = initCategories, action) {
         }
         return category;
       });
+    case DELETE_CATEGORY:
+      return prevState.filter(category => category._id !== action.data);
     default:
       return prevState;
   }

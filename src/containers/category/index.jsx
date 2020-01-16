@@ -2,17 +2,19 @@ import React, { Component } from 'react';
 import { Card, Button, Icon, Table, Modal, message } from 'antd';
 import { connect } from 'react-redux';
 
-import AddCategoryForm from './add-category-form';
+import CategoryForm from './category-form';
 import {
   getCategoryListAsync,
   addCategoryAsync,
-  updateCategoryAsync
+  updateCategoryAsync,
+  deleteCategoryAsync
 } from '$redux/actions';
 
 @connect(state => ({ categories: state.categories }), {
   getCategoryListAsync,
   addCategoryAsync,
-  updateCategoryAsync
+  updateCategoryAsync,
+  deleteCategoryAsync
 })
 class Category extends Component {
   state = {
@@ -45,7 +47,9 @@ class Category extends Component {
             <Button type='link' onClick={this.showCategoryModal(category)}>
               修改分类
             </Button>
-            <Button type='link'>删除分类</Button>
+            <Button type='link' onClick={this.delCategory(category)}>
+              删除分类
+            </Button>
           </div>
         );
       }
@@ -53,9 +57,30 @@ class Category extends Component {
   ];
 
   /**
+   * 删除分类
+   */
+  delCategory = category => {
+    return () => {
+      Modal.confirm({
+        title: `您确认要删除${category.name}分类吗?`,
+        onOk: () => {
+          this.props
+            .deleteCategoryAsync(category._id)
+            .then(() => {
+              message.success('删除分类成功~');
+            })
+            .catch(err => {
+              message.error(err);
+            });
+        }
+      });
+    };
+  };
+
+  /**
    * 添加/修改分类
    */
-  addCategory = () => {
+  setCategory = () => {
     /*
       1. 校验表单
       2. 收集数据
@@ -64,7 +89,7 @@ class Category extends Component {
       4. 请求成功，更新前端数据
     */
 
-    const { validateFields, resetFields } = this.addCategoryForm.props.form;
+    const { validateFields, resetFields } = this.CategoryForm.props.form;
     const {
       category: { name, _id }
     } = this.state;
@@ -92,7 +117,7 @@ class Category extends Component {
             // 清空表单数据
             resetFields();
             // 隐藏对话框
-            this.hiddenAddCategory();
+            this.hiddenCategoryModal();
           })
           .catch(err => {
             message.error(err);
@@ -104,7 +129,7 @@ class Category extends Component {
   /**
    * 隐藏添加分类对话框
    */
-  hiddenAddCategory = () => {
+  hiddenCategoryModal = () => {
     this.setState({
       isShowCategoryModal: false
     });
@@ -122,7 +147,7 @@ class Category extends Component {
     };
   };
 
-  /* showAddCategoryModal = () => {
+  /* showsetCategoryModal = () => {
     return () => {
       this.setState({
         isUpdateCategory: false,
@@ -192,13 +217,13 @@ class Category extends Component {
         <Modal
           title={category.name ? '修改分类' : '添加分类'}
           visible={isShowCategoryModal}
-          onOk={this.addCategory}
-          onCancel={this.hiddenAddCategory}
+          onOk={this.setCategory}
+          onCancel={this.hiddenCategoryModal}
           width={300}
         >
-          <AddCategoryForm
+          <CategoryForm
             categoryName={category.name}
-            wrappedComponentRef={form => (this.addCategoryForm = form)}
+            wrappedComponentRef={form => (this.CategoryForm = form)}
           />
         </Modal>
       </Card>

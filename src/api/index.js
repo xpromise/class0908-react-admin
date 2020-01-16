@@ -45,3 +45,13 @@ export const reqUpdateCategory = (categoryId, categoryName) => {
     }
   });
 };
+// 请求删除分类数据
+export const reqDeleteCategory = (categoryId) => {
+  return axiosInstance({
+    url: '/category/delete',
+    method: 'POST',
+    data: {
+      categoryId,
+    }
+  });
+};
