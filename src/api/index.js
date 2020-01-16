@@ -22,3 +22,36 @@ export const reqGetCategoryList = () => {
     method: 'GET'
   });
 }
+
+// 请求添加分类数据
+export const reqAddCategory = (categoryName) => {
+  return axiosInstance({
+    url: '/category/add',
+    method: 'POST',
+    data: {
+      categoryName
+    }
+  });
+};
+
+// 请求修改分类数据
+export const reqUpdateCategory = (categoryId, categoryName) => {
+  return axiosInstance({
+    url: '/category/update',
+    method: 'POST',
+    data: {
+      categoryId,
+      categoryName
+    }
+  });
+};
+// 请求删除分类数据
+export const reqDeleteCategory = (categoryId) => {
+  return axiosInstance({
+    url: '/category/delete',
+    method: 'POST',
+    data: {
+      categoryId,
+    }
+  });
+};

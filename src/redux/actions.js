@@ -4,13 +4,22 @@
  * 异步action
  */
 
-import { reqLogin, reqGetCategoryList } from '../api';
+import {
+  reqLogin,
+  reqGetCategoryList,
+  reqAddCategory,
+  reqUpdateCategory,
+  reqDeleteCategory
+} from '../api';
 import { setItem } from '../utils/storage';
 import {
   SAVE_USER,
   REMOVE_USER,
   CHANGE_LANGUAGE,
-  GET_CATEGORY_LIST
+  GET_CATEGORY_LIST,
+  ADD_CATEGORY,
+  UPDATE_CATEGORY,
+  DELETE_CATEGORY
 } from './action-types';
 
 export const changeLanguage = lang => ({ type: CHANGE_LANGUAGE, data: lang });
@@ -50,9 +59,54 @@ const getCategoryList = categories => ({
 export const getCategoryListAsync = () => {
   return dispatch => {
     // 发送请求
-    reqGetCategoryList().then(response => {
+    return reqGetCategoryList().then(response => {
       // 调用dispatch，触发更新
       dispatch(getCategoryList(response));
+    });
+  };
+};
+
+const addCategory = category => ({
+  type: ADD_CATEGORY,
+  data: category
+});
+
+export const addCategoryAsync = categoryName => {
+  return dispatch => {
+    // 发送请求
+    return reqAddCategory(categoryName).then(response => {
+      // 调用dispatch，触发更新
+      dispatch(addCategory(response));
+    });
+  };
+};
+
+const updateCategory = category => ({
+  type: UPDATE_CATEGORY,
+  data: category
+});
+
+export const updateCategoryAsync = (categoryId, categoryName) => {
+  return dispatch => {
+    // 发送请求
+    return reqUpdateCategory(categoryId, categoryName).then(response => {
+      // 调用dispatch，触发更新
+      dispatch(updateCategory(response));
+    });
+  };
+};
+
+const deleteCategory = id => ({
+  type: DELETE_CATEGORY,
+  data: id
+});
+
+export const deleteCategoryAsync = (categoryId) => {
+  return dispatch => {
+    // 发送请求
+    return reqDeleteCategory(categoryId).then(response => {
+      // 调用dispatch，触发更新
+      dispatch(deleteCategory(response));
     });
   };
 };
