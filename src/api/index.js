@@ -33,3 +33,15 @@ export const reqAddCategory = (categoryName) => {
     }
   });
 };
+
+// 请求修改分类数据
+export const reqUpdateCategory = (categoryId, categoryName) => {
+  return axiosInstance({
+    url: '/category/update',
+    method: 'POST',
+    data: {
+      categoryId,
+      categoryName
+    }
+  });
+};

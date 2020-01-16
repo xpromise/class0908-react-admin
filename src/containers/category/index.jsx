@@ -3,15 +3,22 @@ import { Card, Button, Icon, Table, Modal, message } from 'antd';
 import { connect } from 'react-redux';
 
 import AddCategoryForm from './add-category-form';
-import { getCategoryListAsync, addCategoryAsync } from '$redux/actions';
+import {
+  getCategoryListAsync,
+  addCategoryAsync,
+  updateCategoryAsync
+} from '$redux/actions';
 
 @connect(state => ({ categories: state.categories }), {
   getCategoryListAsync,
-  addCategoryAsync
+  addCategoryAsync,
+  updateCategoryAsync
 })
 class Category extends Component {
   state = {
-    isShowAddCategory: false
+    isShowCategoryModal: false,
+    // isUpdateCategory: false,
+    category: {}
   };
 
   componentDidMount() {
@@ -25,11 +32,19 @@ class Category extends Component {
     },
     {
       title: '操作',
-      dataIndex: 'operation',
-      render() {
+      // dataIndex: 'name',
+      render: category => {
+        /*
+            render方法参数的值看 dataIndex
+            如果 dataIndex 没有，得到就是整个数据
+        */
+        // console.log(category);
+
         return (
           <div>
-            <Button type='link'>修改分类</Button>
+            <Button type='link' onClick={this.showCategoryModal(category)}>
+              修改分类
+            </Button>
             <Button type='link'>删除分类</Button>
           </div>
         );
@@ -38,7 +53,7 @@ class Category extends Component {
   ];
 
   /**
-   * 添加分类
+   * 添加/修改分类
    */
   addCategory = () => {
     /*
@@ -50,16 +65,30 @@ class Category extends Component {
     */
 
     const { validateFields, resetFields } = this.addCategoryForm.props.form;
+    const {
+      category: { name, _id }
+    } = this.state;
 
     validateFields((err, values) => {
       if (!err) {
         const { categoryName } = values;
         // 3. 发送请求，更新后端数据
-        this.props
-          .addCategoryAsync(categoryName)
+        // 添加 / 修改 --> category.name
+
+        let promise = null;
+
+        if (name) {
+          // 修改
+          promise = this.props.updateCategoryAsync(_id, categoryName);
+        } else {
+          // 添加
+          promise = this.props.addCategoryAsync(categoryName);
+        }
+
+        promise
           .then(() => {
             // 提示添加成功~
-            message.success('添加分类成功~');
+            message.success(`${name ? '修改' : '添加'}分类成功~`);
             // 清空表单数据
             resetFields();
             // 隐藏对话框
@@ -77,21 +106,46 @@ class Category extends Component {
    */
   hiddenAddCategory = () => {
     this.setState({
-      isShowAddCategory: false
+      isShowCategoryModal: false
     });
   };
   /**
    * 显示添加分类对话框
    */
-  showAddCategory = () => {
-    this.setState({
-      isShowAddCategory: true
-    });
+  showCategoryModal = (category = {}) => {
+    return () => {
+      this.setState({
+        isShowCategoryModal: true,
+        category
+        // isUpdateCategory: category.name
+      });
+    };
   };
+
+  /* showAddCategoryModal = () => {
+    return () => {
+      this.setState({
+        isUpdateCategory: false,
+        category: {}
+      });
+      this.showCategoryModal();
+    };
+  };
+
+  // 高阶函数
+  showUpdateCategoryModal = category => {
+    return () => {
+      this.setState({
+        isUpdateCategory: true,
+        category
+      });
+      this.showCategoryModal();
+    };
+  }; */
 
   render() {
     const { categories } = this.props;
-    const { isShowAddCategory } = this.state;
+    const { isShowCategoryModal, category } = this.state;
 
     /* const data = [
       {
@@ -116,7 +170,7 @@ class Category extends Component {
       <Card
         title='分类列表'
         extra={
-          <Button type='primary' onClick={this.showAddCategory}>
+          <Button type='primary' onClick={this.showCategoryModal()}>
             <Icon type='plus' />
             分类列表
           </Button>
@@ -136,13 +190,14 @@ class Category extends Component {
         />
 
         <Modal
-          title='添加分类'
-          visible={isShowAddCategory}
+          title={category.name ? '修改分类' : '添加分类'}
+          visible={isShowCategoryModal}
           onOk={this.addCategory}
           onCancel={this.hiddenAddCategory}
           width={300}
         >
           <AddCategoryForm
+            categoryName={category.name}
             wrappedComponentRef={form => (this.addCategoryForm = form)}
           />
         </Modal>
