@@ -21,10 +21,10 @@ export const reqGetCategoryList = () => {
     url: '/category/get',
     method: 'GET'
   });
-}
+};
 
 // 请求添加分类数据
-export const reqAddCategory = (categoryName) => {
+export const reqAddCategory = categoryName => {
   return axiosInstance({
     url: '/category/add',
     method: 'POST',
@@ -46,12 +46,12 @@ export const reqUpdateCategory = (categoryId, categoryName) => {
   });
 };
 // 请求删除分类数据
-export const reqDeleteCategory = (categoryId) => {
+export const reqDeleteCategory = categoryId => {
   return axiosInstance({
     url: '/category/delete',
     method: 'POST',
     data: {
-      categoryId,
+      categoryId
     }
   });
 };
@@ -66,4 +66,19 @@ export const reqGetProductList = (pageNum, pageSize) => {
       pageSize
     }
   });
-}
+};
+
+// 请求添加商品数据
+export const reqAddProduct = ({ name, desc, price, detail, categoryId }) => {
+  return axiosInstance({
+    url: '/product/add',
+    method: 'POST',
+    data: {
+      name,
+      desc,
+      price,
+      detail,
+      categoryId
+    }
+  });
+};

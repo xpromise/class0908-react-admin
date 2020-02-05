@@ -87,11 +87,15 @@ class HeaderMain extends Component {
       if (menu.children) {
         for (let index = 0; index < menu.children.length; index++) {
           const cMenu = menu.children[index];
-          if (cMenu.path === pathname) {
+          // 如果pathname是 /product 返回 product
+          // 如果pathname是 /product/add 返回 product
+          // cMenu.path是 /product
+          if (pathname.indexOf(cMenu.path) !== -1) {
             return cMenu.title;
           }
         }
       } else {
+        // 一级菜单
         if (menu.path === pathname) {
           return menu.title;
         }
@@ -106,8 +110,10 @@ class HeaderMain extends Component {
       language,
       location: { pathname }
     } = this.props;
-
+    
     const title = this.findTitle(menus, pathname);
+    // title找不到。
+    // console.log(title);
 
     return (
       <div className='header-main'>

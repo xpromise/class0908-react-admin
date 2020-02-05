@@ -71,8 +71,14 @@ class LeftNav extends Component {
   };
 
   render() {
-    const { pathname } = this.props.location;
+    let { pathname } = this.props.location;
 
+    // pathname 可能是 /product/add
+    // 如果pathname包含/product，就改成/product
+    if (pathname.indexOf('/product') !== -1) {
+      pathname = '/product';
+    }
+    
     const openKey = this.findOpenKeys(pathname, menus);
 
     return (

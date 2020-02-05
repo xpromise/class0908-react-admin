@@ -67,6 +67,12 @@ export default class Product extends Component {
     this.getProductList(1, 3);
   }
 
+  // 显示添加商品组件
+  showAddProduct = () => {
+    // 切换地址栏变化
+    this.props.history.push('/product/add');
+  }
+
   render() {
     const { productList, total } = this.state;
 
@@ -86,7 +92,7 @@ export default class Product extends Component {
           </div>
         }
         extra={
-          <Button type='primary'>
+          <Button type='primary' onClick={this.showAddProduct}>
             <Icon type='plus' />
             添加商品
           </Button>

@@ -153,3 +153,8 @@
 			* 在响应拦截器失败回调中完成
 			* 清除本地的用户数据，重新登录一次。
 
+## 错误
+* Uncaught Error: [React Intl] An `id` must be provided to format a message.
+	* 分析：从关键字入手：React Intl / format a message
+	* 一定是国际化功能出现问题，并且是react-intl国际化问题
+	* <FormattedMessage id={xxx} /> 提供的id出了问题

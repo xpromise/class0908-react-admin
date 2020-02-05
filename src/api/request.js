@@ -82,6 +82,7 @@ axiosInstance.interceptors.response.use(
       errMsg = errCode[status];
 
       if (status === 401) {
+        // console.log(typeof status); // number
         // 说明token出问题：过期了
         // 目的:让用户重新登录
         // 清除本地和redux中的用户数据，登录检查就会跳转到login

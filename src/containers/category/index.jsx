@@ -24,7 +24,9 @@ class Category extends Component {
   };
 
   componentDidMount() {
-    this.props.getCategoryListAsync();
+    if (!this.props.categories.length) {
+      this.props.getCategoryListAsync();
+    }
   }
 
   columns = [
