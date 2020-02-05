@@ -130,6 +130,9 @@ class Category extends Component {
    * 隐藏添加分类对话框
    */
   hiddenCategoryModal = () => {
+    // 清空表单数据
+    this.CategoryForm.props.form.resetFields();
+
     this.setState({
       isShowCategoryModal: false
     });

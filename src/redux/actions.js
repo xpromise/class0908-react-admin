@@ -51,14 +51,19 @@ export const saveUserAsync = (username, password) => {
   };
 };
 
+// 同步action
 const getCategoryList = categories => ({
   type: GET_CATEGORY_LIST,
   data: categories
 });
-
+// 异步action
 export const getCategoryListAsync = () => {
   return dispatch => {
     // 发送请求
+    // 不加return，getCategoryListAsync方法就没有返回值
+    // 加上return，getCategoryListAsync方法就是return的返回值
+    // 请求成功，最终返回值是成功的promise
+    // 请求失败，最终返回值是失败的promise
     return reqGetCategoryList().then(response => {
       // 调用dispatch，触发更新
       dispatch(getCategoryList(response));

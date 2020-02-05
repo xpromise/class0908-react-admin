@@ -51,7 +51,7 @@ export default class Product extends Component {
   getProductList = (pageNum, pageSize) => {
     reqGetProductList(pageNum, pageSize)
       .then(response => {
-        console.log(response);
+        // console.log(response);
         this.setState({
           productList: response.list,
           total: response.total

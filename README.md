@@ -121,3 +121,35 @@
 		>
 		</ConfigProvider>
 	```
+
+## 分类管理
+* redux操作流程
+	* 定义api - 发送请求的方法
+	* actions - 因为要发送请求，所以定义异步action（异步action一般还需要定义一个同步action）
+	* action-types 常量
+	* reducers
+		* 如果数据是一个不同的新数据，就要定义一个新的reducer函数	
+	* 通过connect高阶组件向UI组件传递redux的状态数据，更新状态数据的方法
+		* @connect((state) => ({categories: state.categories}), { xxx })
+	* 使用： this.props.xxx
+
+## 分页管理
+* 前台分页
+	* 分类管理
+	* 一次性将所有数据全部请求回来，再进行分页展示
+	* 问题：如果数据比较多，那么速度就很慢
+* 后台分页
+	* 商品管理
+	* 每次请求只请求当前一页的数据
+	* 优点：请求的数据少，速度快~
+	* 缺点：切换分页时，需要频繁的发送请求
+
+* 问题：401错误，你没权限访问。
+	* 一定是token出错了~
+	* 解决：
+		* 通过检查network看相应请求的request headers中有没有authorization，以及值是否正确
+		* 如果没有，那就去请求拦截器中检查原因
+		* 如果有还是报错，说明token过期了（服务器token7天过期的）
+			* 在响应拦截器失败回调中完成
+			* 清除本地的用户数据，重新登录一次。
+

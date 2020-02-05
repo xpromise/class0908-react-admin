@@ -35,6 +35,7 @@ function language(prevState = initLanguage, action) {
   }
 }
 
+// 不能修改原数据，store是只读的
 const initCategories = [];
 function categories(prevState = initCategories, action) {
   switch (action.type) {
@@ -56,6 +57,7 @@ function categories(prevState = initCategories, action) {
   }
 }
 
+// 将多个reducer函数整合成一个返回
 export default combineReducers({
   user,
   language,
