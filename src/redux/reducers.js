@@ -55,6 +55,7 @@ function categories(prevState = initCategories, action) {
       return prevState;
   }
 }
+
 export default combineReducers({
   user,
   language,

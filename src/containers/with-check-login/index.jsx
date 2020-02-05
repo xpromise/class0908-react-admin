@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 export default function withCheckLogin(WrappedComponent) {
+
   @connect(state => ({ user: state.user }), null)
   class CheckLogin extends Component {
     // 给组件命名
@@ -56,6 +57,7 @@ export default function withCheckLogin(WrappedComponent) {
         }
       }
 
+      // 注意：一定要将props传下去
       return <WrappedComponent {...this.props} />;
     }
   }

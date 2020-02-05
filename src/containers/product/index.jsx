@@ -69,6 +69,7 @@ export default class Product extends Component {
 
   render() {
     const { productList, total } = this.state;
+
     return (
       <Card
         title={

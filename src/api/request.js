@@ -50,6 +50,7 @@ axiosInstance.interceptors.request.use(config => {
 
 // 响应拦截器
 axiosInstance.interceptors.response.use(
+  // 成功的响应 --> 2xx
   response => {
     /*
       成功返回成功的promise
@@ -61,6 +62,7 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(response.data.msg);
     }
   },
+  // 失败的响应
   err => {
     /*
       根据不同的错误原因，提示不同错误

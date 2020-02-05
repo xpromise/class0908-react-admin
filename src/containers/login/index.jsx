@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { saveUserAsync } from '$redux/actions';
 import withCheckLogin from '$cont/with-check-login';
 
-
 // 图片必须引入，才会被webpack打包
 import logo from '../../assets/imgs/logo.png';
 import './index.less';
@@ -86,7 +85,7 @@ class Login extends Component {
               // 提示错误
               message.error(response.data.msg);
               // 清空密码
-              this.props.form.resetFields(['password']);
+              this.props.form.resetFields(['password']);b
             }
           })
           .catch(err => {
