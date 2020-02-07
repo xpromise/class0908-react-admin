@@ -6,7 +6,8 @@ import { reqGetProductList } from '$api';
 export default class Product extends Component {
   state = {
     productList: [],
-    total: 0
+    total: 0,
+    isLoading: false
   };
 
   columns = [
@@ -58,17 +59,24 @@ export default class Product extends Component {
   // 高阶函数：通过闭包来使用传入的值
   showUpdateProduct = product => {
     return () => {
-      // console.log(product);  
+      // console.log(product);
       // 获取当前点击的商品id
       const id = product._id;
       // 跳转地址
       // history.push(路径, 传递数据)
-      // 怎么获取路由传递的数据呢？ location.state 
+      // 怎么获取路由传递的数据呢？ location.state
       this.props.history.push('/product/update/' + id, product);
     };
   };
 
   getProductList = (pageNum, pageSize) => {
+    // 在请求之前 isLoading = true
+    // 在请求结束 isLoading = false
+
+    this.setState({
+      isLoading: true
+    })
+
     reqGetProductList(pageNum, pageSize)
       .then(response => {
         // console.log(response);
@@ -80,7 +88,21 @@ export default class Product extends Component {
       })
       .catch(err => {
         message.error(err);
-      });
+      })
+      .finally(() => {
+        /*
+          思考：多次setState调用会合并成最后一次。
+            this.setState(obj1)
+            this.setState(obj2)
+            this.setState(obj3)
+            最终做法，将obj1、obj2、obj3合并成一个对象
+            const obj = Object.assign(obj1, obj2, obj3);
+            this.setState(obj)
+        */
+        this.setState({
+          isLoading: false
+        })
+      })
   };
 
   componentDidMount() {
@@ -94,7 +116,7 @@ export default class Product extends Component {
   };
 
   render() {
-    const { productList, total } = this.state;
+    const { productList, total, isLoading } = this.state;
 
     return (
       <Card
@@ -134,6 +156,8 @@ export default class Product extends Component {
             onShowSizeChange: this.getProductList
           }}
           rowKey='_id'
+          // 是否在加载中
+          loading={isLoading}
         />
       </Card>
     );

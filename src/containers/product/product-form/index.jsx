@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 
 import { connect } from 'react-redux';
 import { getCategoryListAsync } from '$redux/actions';
-import { reqAddProduct } from '$api';
+import { reqAddProduct, reqUpdateProduct } from '$api';
 
 import './index.less';
 // 引入富文本编辑器组件的样式
@@ -44,6 +44,11 @@ class ProductForm extends Component {
     }
   }
 
+  // 判断当前是添加商品/修改闪屏
+  isAddProduct = () => {
+    return this.props.location.pathname.indexOf('/update/') === -1;
+  };
+
   submit = e => {
     e.preventDefault();
     // 校验表单并收集数据
@@ -63,16 +68,38 @@ class ProductForm extends Component {
         // console.log(detail.toHTML()); // <p>ccc</p>
         // console.log(detail.toText()); // ccc  aaaaaaaaaaaa😍
 
-        // 发送请求
-        reqAddProduct({
-          name,
-          desc,
-          categoryId,
-          price,
-          detail: detail.toHTML()
-        })
+        let promise = null;
+
+        const isAddProduct = this.isAddProduct();
+
+        if (isAddProduct) {
+          // 添加商品
+          // 发送添加商品请求
+          promise = reqAddProduct({
+            name,
+            desc,
+            categoryId,
+            price,
+            detail: detail.toHTML()
+          });
+        } else {
+          // 修改商品
+          // 发送修改商品请求
+          promise = reqUpdateProduct({
+            name,
+            desc,
+            categoryId,
+            price,
+            detail: detail.toHTML(),
+            // productId: this.props.location.state._id // 问题：如果是直接访问，没有state
+            productId: this.props.match.params.id
+          });
+        }
+
+        // 复用代码
+        promise
           .then(() => {
-            message.success('添加商品成功');
+            message.success(`${isAddProduct ? '添加' : '修改'}商品成功`);
             // 跳转到商品页面，查看
             this.props.history.push('/product');
           })
@@ -93,12 +120,17 @@ class ProductForm extends Component {
   } */
 
   // 处理分类id问题
-  handleCategoryId = (isAddProduct) => {
+  handleCategoryId = isAddProduct => {
     if (isAddProduct) {
       return '0';
     }
     // 获取redux中所有分类数据
-    const {categories, location: {state: {categoryId}}} = this.props;
+    const {
+      categories,
+      location: {
+        state: { categoryId }
+      }
+    } = this.props;
 
     // 去所有分类数据中查找是否有指定商品的分类数据
     /*
@@ -108,22 +140,22 @@ class ProductForm extends Component {
           需要遍历整个数组，如果都是false，整体find返回值就是undefined
           只要有一个是true，就不会再遍历数组，并整体find返回找到的元素
     */
-    const category = categories.find((category) => {
+    const category = categories.find(category => {
       /*
         category._id 指的是分类数据中的id
         categoryId 指的是路由传参的商品数据的分类id
       */
-      return category._id === categoryId
-    })
+      return category._id === categoryId;
+    });
 
     if (category) {
       // 有值，说明找到了，商品分类是存在的
       return categoryId;
-    } 
+    }
 
     // 没有值，没有找到，说明商品分类被删除掉了
     return '0';
-  }
+  };
 
   render() {
     const {
@@ -133,7 +165,7 @@ class ProductForm extends Component {
     } = this.props;
 
     // 获取路由传递的数据: state 商品数据
-    const { state, pathname } = location;
+    const { state } = location;
 
     /*
       需要判断当前操作是：添加商品还是修改商品
@@ -149,12 +181,7 @@ class ProductForm extends Component {
         最终解决：判断请求地址!
     */
     // 标识：是否是添加商品
-    let isAddProduct = true;
-
-    if (pathname.indexOf('/update/') !== -1) {
-      // 修改商品
-      isAddProduct = false;
-    }
+    const isAddProduct = this.isAddProduct();
 
     const formItemLayout = {
       labelCol: {
@@ -262,7 +289,9 @@ class ProductForm extends Component {
                 }
               ],
               // 纯文本 BraftEditor 组件是不能显示的。需要转换成 EditorState。(通过createEditorState)
-              initialValue: isAddProduct ? '' : BraftEditor.createEditorState(state.detail)
+              initialValue: isAddProduct
+                ? ''
+                : BraftEditor.createEditorState(state.detail)
             })(<BraftEditor className='product-detail' />)}
           </Item>
           <Item>
