@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import { Card, Select, Input, Button, Icon, Table, message } from 'antd';
 
-import { reqGetProductList } from '$api';
+import { reqGetProductList, reqSearchProduct } from '$api';
 
 export default class Product extends Component {
   state = {
     productList: [],
     total: 0,
-    isLoading: false
+    isLoading: false,
+    // 收集表单数据
+    searchType: 'productName',
+    searchValue: ''
   };
+
+  // 实例对象的属性
+  currentSearchValue = '';
 
   columns = [
     {
@@ -75,16 +81,56 @@ export default class Product extends Component {
 
     this.setState({
       isLoading: true
-    })
+    });
 
-    reqGetProductList(pageNum, pageSize)
+    /*
+      区分两种请求： 1. 普通获取商品数据  2. 搜索商品数据
+        解决：
+          1. 看是否有searchValue？
+            问题：如果没有点击搜索按钮，此时输入searchValue。请问：要不要搜索。不要搜索
+          2. 传入第三个参数
+            isSearch: true/false --> true代表搜索 false代表没有搜索
+            问题：第一次点击了搜索按钮，第二次点击页面换成第二页。此时触发分页器的onChange事件
+              事件回调函数只会传入两个参数，isSearch是undefined。导致搜索失效
+          3. 定义属性 currentSearchValue： 保证只有点击搜索按钮才会有值
+            注意：不能定义成state，因为state是异步更新的
+            解决：没有点过搜索按钮就是普通查询，点过了搜索才是搜索
+    */
+
+    // 可不可以获取currentSearchValue？ 拿不到，因为setState是异步更新的
+    // const { currentSearchValue } = this.state;
+    // 作为属性，更新是同步的，所有才能获取
+    const { currentSearchValue } = this;
+    const { searchType } = this.state;
+
+    let promise = null;
+
+    if (currentSearchValue) {
+      // console.log('搜索商品');
+      /*
+        搜索的值是 searchValue 还是 currentSearchValue？ currentSearchValue
+      */
+      promise = reqSearchProduct({
+        pageNum,
+        pageSize,
+        searchValue: currentSearchValue,
+        searchType
+      });
+    } else {
+      // console.log('普通获取商品');
+      promise = reqGetProductList(pageNum, pageSize);
+    }
+
+    promise
       .then(response => {
         // console.log(response);
         this.setState({
           productList: response.list,
           total: response.total
         });
-        message.success('获取商品列表数据成功~');
+        message.success(
+          `${currentSearchValue ? '搜索' : '获取'}商品列表数据成功~`
+        );
       })
       .catch(err => {
         message.error(err);
@@ -101,8 +147,8 @@ export default class Product extends Component {
         */
         this.setState({
           isLoading: false
-        })
-      })
+        });
+      });
   };
 
   componentDidMount() {
@@ -115,22 +161,59 @@ export default class Product extends Component {
     this.props.history.push('/product/add');
   };
 
+  // 收集数据
+  handleSelect = value => {
+    /*
+      正常的DOM(Input)的change事件的参数 是 event  --> e.target.value
+      但是，现在是给Select组件绑定change事件，它的参数是value
+    */
+    // console.log(value);
+    this.setState({
+      searchType: value
+    });
+  };
+
+  handleInput = e => {
+    this.setState({
+      searchValue: e.target.value.trim()
+    });
+  };
+
+  // 搜索产品
+  search = () => {
+    const { searchValue } = this.state;
+
+    // currentSearchValue什么时候有值？ 只有点击搜索按钮才有值。
+    this.currentSearchValue = searchValue;
+
+    this.getProductList(1, 3);
+  };
+
   render() {
-    const { productList, total, isLoading } = this.state;
+    const {
+      productList,
+      total,
+      isLoading,
+      searchType,
+      searchValue
+    } = this.state;
 
     return (
       <Card
         title={
           <div>
-            <Select defaultValue='1'>
-              <Select.Option value='1'>根据商品名称</Select.Option>
-              <Select.Option value='2'>根据商品描述</Select.Option>
+            <Select defaultValue={searchType} onChange={this.handleSelect}>
+              <Select.Option value='productName'>根据商品名称</Select.Option>
+              <Select.Option value='productDesc'>根据商品描述</Select.Option>
             </Select>
             <Input
               placeholder='关键字'
               style={{ width: 200, margin: '0 10px' }}
+              onChange={this.handleInput}
             />
-            <Button type='primary'>搜索</Button>
+            <Button type='primary' onClick={this.search}>
+              搜索
+            </Button>
           </div>
         }
         extra={

@@ -98,3 +98,20 @@ export const reqUpdateProduct = ({ name, desc, price, detail, categoryId, produc
     }
   });
 };
+
+// 请求搜索商品数据
+/*
+  searchType 搜索类型：productName  / productDesc
+  searchValue 搜索的值
+*/
+export const reqSearchProduct = ({ searchType, searchValue, pageNum, pageSize }) => {
+  return axiosInstance({
+    url: '/product/search',
+    method: 'GET',
+    params: {
+      pageNum, 
+      pageSize,
+      [searchType]: searchValue
+    }
+  });
+};
