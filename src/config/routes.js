@@ -2,6 +2,7 @@ import Home from '../components/home';
 import Category from '../containers/category';
 import Product from '../containers/product';
 import ProductForm from '../containers/product/product-form';
+import Role from '../containers/role';
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     // 匹配多个地址
     path: '/product/update/:id',
     component: ProductForm,
+    exact: true
+  },
+  {
+    path: '/role',
+    component: Role,
     exact: true
   },
 ];

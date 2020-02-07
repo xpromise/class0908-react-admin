@@ -84,7 +84,14 @@ export const reqAddProduct = ({ name, desc, price, detail, categoryId }) => {
 };
 
 // 请求修改商品数据
-export const reqUpdateProduct = ({ name, desc, price, detail, categoryId, productId }) => {
+export const reqUpdateProduct = ({
+  name,
+  desc,
+  price,
+  detail,
+  categoryId,
+  productId
+}) => {
   return axiosInstance({
     url: '/product/update',
     method: 'POST',
@@ -104,14 +111,39 @@ export const reqUpdateProduct = ({ name, desc, price, detail, categoryId, produc
   searchType 搜索类型：productName  / productDesc
   searchValue 搜索的值
 */
-export const reqSearchProduct = ({ searchType, searchValue, pageNum, pageSize }) => {
+export const reqSearchProduct = ({
+  searchType,
+  searchValue,
+  pageNum,
+  pageSize
+}) => {
   return axiosInstance({
     url: '/product/search',
     method: 'GET',
     params: {
-      pageNum, 
+      pageNum,
       pageSize,
       [searchType]: searchValue
     }
+  });
+};
+
+// 请求更新商品状态数据
+export const reqUpdateProductStatus = (productId, status) => {
+  return axiosInstance({
+    url: '/product/update/status',
+    method: 'POST',
+    data: {
+      productId,
+      status
+    }
+  });
+};
+
+// 请求获取角色列表数据
+export const reqGetRoleList = () => {
+  return axiosInstance({
+    url: '/role/get',
+    method: 'GET',
   });
 };
