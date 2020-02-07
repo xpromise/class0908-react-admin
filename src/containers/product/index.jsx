@@ -36,17 +36,37 @@ export default class Product extends Component {
     },
     {
       title: '操作',
-      dataIndex: 'xxx',
-      render: () => {
+      // dataIndex: '_id',
+      render: product => {
+        /*
+          如果dataIndex: '_id', 那么render方法中 product 就是 product._id。就是id
+          如果没有 dataIndex，那么render方法中 product 就是整个商品数据
+        */
         return (
           <div>
             <Button type='link'>详情</Button>
-            <Button type='link'>修改</Button>
+            <Button type='link' onClick={this.showUpdateProduct(product)}>
+              修改
+            </Button>
           </div>
         );
       }
     }
   ];
+
+  // 显示更新商品页面
+  // 高阶函数：通过闭包来使用传入的值
+  showUpdateProduct = product => {
+    return () => {
+      // console.log(product);  
+      // 获取当前点击的商品id
+      const id = product._id;
+      // 跳转地址
+      // history.push(路径, 传递数据)
+      // 怎么获取路由传递的数据呢？ location.state 
+      this.props.history.push('/product/update/' + id, product);
+    };
+  };
 
   getProductList = (pageNum, pageSize) => {
     reqGetProductList(pageNum, pageSize)
@@ -71,7 +91,7 @@ export default class Product extends Component {
   showAddProduct = () => {
     // 切换地址栏变化
     this.props.history.push('/product/add');
-  }
+  };
 
   render() {
     const { productList, total } = this.state;
