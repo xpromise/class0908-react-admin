@@ -158,3 +158,17 @@
 	* 分析：从关键字入手：React Intl / format a message
 	* 一定是国际化功能出现问题，并且是react-intl国际化问题
 	* <FormattedMessage id={xxx} /> 提供的id出了问题
+
+## 修改商品
+* 如何判断页面变化由什么控制？
+	* 如果只有页面变化，没有url变化，就是通过控制状态（组件自己的state / redux）更新的
+	* 如果既有页面变化，又有url变化，就是通过控制路由更新的
+* 路由更新怎么设置呢？
+	* 统一都在 config/routes 配置路由表
+	* 最终会在 App 组件中遍历出 Route 加载
+* 路由组件通信
+	* Product --> ProductForm..
+	* 可以通过 history.push('/product/update/xxx', 数据)	
+	* 组件内部通过 location.state 获取
+		
+

@@ -10,7 +10,8 @@ import {
   ADD_CATEGORY,
   UPDATE_CATEGORY,
   DELETE_CATEGORY,
-  GET_ROLE_LIST
+  GET_ROLE_LIST,
+  ADD_ROLE
 } from './action-types';
 import { getItem } from '../utils/storage';
 
@@ -65,6 +66,8 @@ function roles(prevState = initRoles, action) {
   switch (action.type) {
     case GET_ROLE_LIST:
       return action.data;
+    case ADD_ROLE :
+      return [...prevState, action.data]
     default:
       return prevState;
   }

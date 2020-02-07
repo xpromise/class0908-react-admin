@@ -10,3 +10,4 @@ export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const GET_ROLE_LIST = 'GET_ROLE_LIST';
+export const ADD_ROLE = 'ADD_ROLE';
