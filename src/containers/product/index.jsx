@@ -84,8 +84,10 @@ export default class Product extends Component {
         */
         return (
           <div>
-            <Button type='link'>详情</Button>
-            <Button type='link' onClick={this.showUpdateProduct(product)}>
+            <Button type='link' onClick={this.showProduct(product)}>
+              详情
+            </Button>
+            <Button type='link' onClick={this.showProduct(product, 'update/')}>
               修改
             </Button>
           </div>
@@ -102,23 +104,23 @@ export default class Product extends Component {
           1 --> 2
           2 --> 1
       */
-     const newStatus = 3 - status;
+      const newStatus = 3 - status;
       reqUpdateProductStatus(productId, newStatus)
         .then(res => {
           // 请求成功： 更新state中的数据
           this.setState({
-            productList: this.state.productList.map((product) => {
+            productList: this.state.productList.map(product => {
               if (product._id === productId) {
                 return {
                   // 展开对象：包含对象的所有属性
                   ...product,
                   // 添加一个新属性，覆盖掉旧属性
                   status: newStatus
-                }
+                };
               }
               return product;
             })
-          })
+          });
           message.success('更新商品状态成功~');
         })
         .catch(err => {
@@ -129,7 +131,7 @@ export default class Product extends Component {
 
   // 显示更新商品页面
   // 高阶函数：通过闭包来使用传入的值
-  showUpdateProduct = product => {
+  /* showUpdateProduct = product => {
     return () => {
       // console.log(product);
       // 获取当前点击的商品id
@@ -138,6 +140,25 @@ export default class Product extends Component {
       // history.push(路径, 传递数据)
       // 怎么获取路由传递的数据呢？ location.state
       this.props.history.push('/product/update/' + id, product);
+    };
+  };
+
+  // 显示商品详情页面
+  showProductDetail = product => {
+    return () => {
+      // 获取当前点击的商品id
+      const id = product._id;
+      // 跳转地址
+      this.props.history.push('/product/' + id, product);
+    };
+  }; */
+  // 封装复用上面两个函数
+  showProduct = (product, path = '') => {
+    return () => {
+      // 获取当前点击的商品id
+      const id = product._id;
+      // 跳转地址
+      this.props.history.push('/product/' + path + id, product);
     };
   };
 

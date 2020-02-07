@@ -44,7 +44,7 @@ class ProductForm extends Component {
     }
   }
 
-  // 判断当前是添加商品/修改闪屏
+  // 判断当前是添加商品/修改商品
   isAddProduct = () => {
     return this.props.location.pathname.indexOf('/update/') === -1;
   };

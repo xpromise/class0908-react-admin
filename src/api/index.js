@@ -56,7 +56,7 @@ export const reqDeleteCategory = categoryId => {
   });
 };
 
-// 请求获取商品数据
+// 请求获取分页商品数据
 export const reqGetProductList = (pageNum, pageSize) => {
   return axiosInstance({
     url: '/product/list',
@@ -67,6 +67,16 @@ export const reqGetProductList = (pageNum, pageSize) => {
     }
   });
 };
+
+// 请求获取单个商品数据
+export const reqGetProduct = productId =>
+  axiosInstance({
+    method: 'GET',
+    url: '/product/get',
+    params: {
+      productId
+    }
+  });
 
 // 请求添加商品数据
 export const reqAddProduct = ({ name, desc, price, detail, categoryId }) => {
@@ -144,12 +154,12 @@ export const reqUpdateProductStatus = (productId, status) => {
 export const reqGetRoleList = () => {
   return axiosInstance({
     url: '/role/get',
-    method: 'GET',
+    method: 'GET'
   });
 };
 
 // 请求添加角色数据
-export const reqAddRole = (name) => {
+export const reqAddRole = name => {
   return axiosInstance({
     url: '/role/add',
     method: 'POST',
@@ -158,4 +168,3 @@ export const reqAddRole = (name) => {
     }
   });
 };
-
