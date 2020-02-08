@@ -169,3 +169,33 @@ export const reqAddRole = name => {
     }
   });
 };
+
+// 请求设置角色权限数据
+export const reqUpdateRole = ({ roleId, authName, menus }) => {
+  return axiosInstance({
+    url: '/role/update',
+    method: 'POST',
+    data: {
+      roleId,
+      authName,
+      menus
+    }
+  });
+};
+
+// 请求获取用户数据
+export const reqGetUser = () => {
+  return axiosInstance({
+    url: '/user/get',
+    method: 'GET'
+  });
+};
+
+// 请求创建用户数据
+export const reqAddUser = ({ username, password, phone, email, roleId }) => {
+  return axiosInstance({
+    url: '/user/add',
+    method: 'POST',
+    data: { username, password, phone, email, roleId }
+  });
+};

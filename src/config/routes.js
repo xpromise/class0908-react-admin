@@ -4,6 +4,7 @@ import Product from '../containers/product';
 import ProductForm from '../containers/product/product-form';
 import ProductDetail from '../containers/product/product-detail';
 import Role from '../containers/role';
+import User from '../containers/user';
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
   {
     path: '/role',
     component: Role,
+    exact: true
+  },
+  {
+    path: '/user',
+    component: User,
     exact: true
   }
 ];

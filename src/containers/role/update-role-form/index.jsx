@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Input, Tree } from 'antd';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import menus from '$conf/menus';
 
@@ -66,12 +67,21 @@ class UpdateRoleForm extends Component {
     return menus.map(item => {
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.path} dataRef={item}>
+          <TreeNode
+            title={<FormattedMessage id={item.title} />}
+            key={item.path}
+            dataRef={item}
+          >
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={item.title} key={item.path} />;
+      return (
+        <TreeNode
+          title={<FormattedMessage id={item.title} />}
+          key={item.path}
+        />
+      );
     });
   };
 
@@ -99,9 +109,10 @@ class UpdateRoleForm extends Component {
             注意：子节点如果只选中一个或者没有，父节点是不会选中的
                   只有所有子节点被选中了，才会添加父节点
           */}
-          {getFieldDecorator('roles', {
+          {getFieldDecorator('menus', {
             trigger: 'onCheck', // 默认值onChange
-            valuePropName: 'checkedKeys' // 默认值value
+            valuePropName: 'checkedKeys', // 默认值value
+            initialValue: role.menus
           })(
             <Tree checkable={true} defaultExpandAll>
               <TreeNode title='平台权限' key='0'>
