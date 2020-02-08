@@ -18,7 +18,7 @@ class Role extends Component {
     isLoading: false,
     isShowAddRoleModal: false, // 是否显示添加角色Modal
     isShowUpdateRoleModal: false,
-    role: null // 选中的角色数据
+    role: {} // 选中的角色数据
   };
 
   // 缓存数据
@@ -148,6 +148,17 @@ class Role extends Component {
     });
   };
 
+  // 设置角色权限
+  updateRole = () => {
+    // 获取表单的实例对象
+    const { validateFields } = this.updateRoleForm.props.form;
+    validateFields((err, values) => {
+      if (!err) {
+        console.log(values);
+      }
+    })
+  };
+
   render() {
     const {
       isLoading,
@@ -155,6 +166,7 @@ class Role extends Component {
       isShowUpdateRoleModal,
       role
     } = this.state;
+
     const { roles } = this.props;
 
     return (
@@ -170,7 +182,7 @@ class Role extends Component {
             &nbsp;&nbsp;
             <Button
               type='primary'
-              disabled={!role}
+              disabled={!role._id}
               onClick={this.switchModal('isShowUpdateRoleModal', true)}
             >
               设置角色权限
@@ -206,10 +218,13 @@ class Role extends Component {
         <Modal
           title='设置角色权限'
           visible={isShowUpdateRoleModal}
-          onOk={this.UpdateRole}
+          onOk={this.updateRole}
           onCancel={this.switchModal('isShowUpdateRoleModal', false)}
         >
-          <UpdateRoleForm />
+          <UpdateRoleForm
+            wrappedComponentRef={form => (this.updateRoleForm = form)}
+            role={role}
+          />
         </Modal>
       </Card>
     );
