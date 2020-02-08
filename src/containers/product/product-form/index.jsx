@@ -193,7 +193,7 @@ class ProductForm extends Component {
 
     /*
       数据可以来源于两个方面：
-        路由传递的参数： state（有值：说明传参了，是对象， 没有值：说明没有传参，是undefined）
+        路由传递的参数： routeData（有值：说明传参了，是对象， 没有值：说明没有传参，是undefined）
         组件请求回来的数据：属于this.state.product
           值为{}（为了避免一上来没有数据时state.name报错，所以初始化为空对象）。说明没有数据
           值为{name, categoryId},才说明数据请求回来了

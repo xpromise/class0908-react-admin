@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { getRoleListAsync, addRoleAsync } from '$redux/actions';
 
 import AddRoleForm from './add-role-form';
+import UpdateRoleForm from './update-role-form';
 
 const { Group } = Radio;
 
@@ -15,7 +16,9 @@ const { Group } = Radio;
 class Role extends Component {
   state = {
     isLoading: false,
-    isShowAddRoleModal: false // 是否显示添加角色Modal
+    isShowAddRoleModal: false, // 是否显示添加角色Modal
+    isShowUpdateRoleModal: false,
+    role: null // 选中的角色数据
   };
 
   // 缓存数据
@@ -83,15 +86,23 @@ class Role extends Component {
     })
   } */
   // 复用函数，封装成高阶函数
-  switchAddRoleModal = isShowAddRoleModal => {
+  /*
+    key 代表要更新的state的属性名 isShowAddRoleModal / isShowUpdateRoleModal
+    value 代表要更新的state的属性值 true / false
+  */
+  switchModal = (key, value) => {
     return () => {
-      if (!isShowAddRoleModal) {
-        // 如果隐藏对话框，需要将用户输入给清空
-        this.addRoleForm.props.form.resetFields();
+      // 判断是否是隐藏对话框 --> false就是隐藏对话框
+      if (!value) {
+        // 判断清空的是 创建角色 还是 设置角色权限
+        if (key === 'isShowAddRoleModal') {
+          this.addRoleForm.props.form.resetFields();
+        } else {
+          // 清空 设置角色权限 表单数据
+        }
       }
-
       this.setState({
-        isShowAddRoleModal
+        [key]: value
       });
     };
   };
@@ -124,19 +135,44 @@ class Role extends Component {
     });
   };
 
+  // 处理单选按钮事件
+  handleRadioChange = e => {
+    // 单选按钮选中的值需要什么？ 看功能需要所有数据
+    // 但是这里这能得到id，否则会报错
+    const id = e.target.value;
+    // 查找到角色数据
+    const role = this.props.roles.find(role => role._id === id);
+    // 更新成状态
+    this.setState({
+      role
+    });
+  };
+
   render() {
-    const { isLoading, isShowAddRoleModal } = this.state;
+    const {
+      isLoading,
+      isShowAddRoleModal,
+      isShowUpdateRoleModal,
+      role
+    } = this.state;
     const { roles } = this.props;
 
     return (
       <Card
         title={
           <div>
-            <Button type='primary' onClick={this.switchAddRoleModal(true)}>
+            <Button
+              type='primary'
+              onClick={this.switchModal('isShowAddRoleModal', true)}
+            >
               创建角色
-            </Button>{' '}
+            </Button>
             &nbsp;&nbsp;
-            <Button type='primary' disabled>
+            <Button
+              type='primary'
+              disabled={!role}
+              onClick={this.switchModal('isShowUpdateRoleModal', true)}
+            >
               设置角色权限
             </Button>
           </div>
@@ -146,7 +182,7 @@ class Role extends Component {
           Group 包裹 Table。因为 Table 有 Radio 
           这样就能让 Radio 变成单选
         */}
-        <Group style={{ width: '100%' }}>
+        <Group style={{ width: '100%' }} onChange={this.handleRadioChange}>
           <Table
             columns={this.columns}
             dataSource={roles}
@@ -160,11 +196,20 @@ class Role extends Component {
           title='创建角色'
           visible={isShowAddRoleModal}
           onOk={this.addRole}
-          onCancel={this.switchAddRoleModal(false)}
+          onCancel={this.switchModal('isShowAddRoleModal', false)}
         >
           <AddRoleForm
             wrappedComponentRef={form => (this.addRoleForm = form)}
           />
+        </Modal>
+
+        <Modal
+          title='设置角色权限'
+          visible={isShowUpdateRoleModal}
+          onOk={this.UpdateRole}
+          onCancel={this.switchModal('isShowUpdateRoleModal', false)}
+        >
+          <UpdateRoleForm />
         </Modal>
       </Card>
     );
