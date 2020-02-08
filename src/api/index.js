@@ -69,14 +69,15 @@ export const reqGetProductList = (pageNum, pageSize) => {
 };
 
 // 请求获取单个商品数据
-export const reqGetProduct = productId =>
-  axiosInstance({
+export const reqGetProduct = productId => {
+  return axiosInstance({
     method: 'GET',
     url: '/product/get',
     params: {
       productId
     }
   });
+};
 
 // 请求添加商品数据
 export const reqAddProduct = ({ name, desc, price, detail, categoryId }) => {

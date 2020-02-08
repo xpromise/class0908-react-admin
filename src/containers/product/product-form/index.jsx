@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 
 import { connect } from 'react-redux';
 import { getCategoryListAsync } from '$redux/actions';
-import { reqAddProduct, reqUpdateProduct } from '$api';
+import { reqAddProduct, reqUpdateProduct, reqGetProduct } from '$api';
 
 import './index.less';
 // 引入富文本编辑器组件的样式
@@ -36,11 +36,33 @@ const { Option } = Select;
 })
 @Form.create()
 class ProductForm extends Component {
+  state = {
+    // 商品数据
+    product: {}
+  };
+
   // 因为数据只要请求一次
   componentDidMount() {
     if (!this.props.categories.length) {
       // 只有当redux管理的categories数据没有，才会发送请求，请求分类数据
       this.props.getCategoryListAsync();
+    }
+
+    // 判断当前是否是修改商品 并且 是否有state数据
+    if (!this.isAddProduct() && !this.props.location.state) {
+      // 如果都没有，需要把数据请求回来
+      const productId = this.props.match.params.id;
+      reqGetProduct(productId)
+        .then(res => {
+          // 请求完数据之后，数据要想展示：必须更新状态
+          // (只有单个组件，就是单个组件state。如果多个组件用，就是redux)
+          this.setState({
+            product: res
+          });
+        })
+        .catch(err => {
+          message.error(err);
+        });
     }
   }
 
@@ -120,17 +142,18 @@ class ProductForm extends Component {
   } */
 
   // 处理分类id问题
-  handleCategoryId = isAddProduct => {
+  handleCategoryId = (isAddProduct, product) => {
+
+    // 如果是添加商品
     if (isAddProduct) {
+      // 暂无分类
       return '0';
     }
+
+    // 修改商品
     // 获取redux中所有分类数据
-    const {
-      categories,
-      location: {
-        state: { categoryId }
-      }
-    } = this.props;
+    const { categories } = this.props;
+    const { categoryId } = product;
 
     // 去所有分类数据中查找是否有指定商品的分类数据
     /*
@@ -158,6 +181,7 @@ class ProductForm extends Component {
   };
 
   render() {
+    const { product } = this.state;
     const {
       form: { getFieldDecorator },
       categories,
@@ -165,7 +189,17 @@ class ProductForm extends Component {
     } = this.props;
 
     // 获取路由传递的数据: state 商品数据
-    const { state } = location;
+    const routeData = location.state;
+
+    /*
+      数据可以来源于两个方面：
+        路由传递的参数： state（有值：说明传参了，是对象， 没有值：说明没有传参，是undefined）
+        组件请求回来的数据：属于this.state.product
+          值为{}（为了避免一上来没有数据时state.name报错，所以初始化为空对象）。说明没有数据
+          值为{name, categoryId},才说明数据请求回来了
+    */
+    // 选择使用：有数据的变量（如果数据不存在就是{}，如果数据存在就是具体数据）
+    const state = routeData || product;
 
     /*
       需要判断当前操作是：添加商品还是修改商品
@@ -241,7 +275,7 @@ class ProductForm extends Component {
                   message: '请选择商品分类'
                 }
               ],
-              initialValue: this.handleCategoryId(isAddProduct)
+              initialValue: this.handleCategoryId(isAddProduct, state)
             })(
               <Select placeholder='请选择商品分类'>
                 <Option key='0' value='0'>
