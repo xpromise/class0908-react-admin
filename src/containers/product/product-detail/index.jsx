@@ -3,7 +3,7 @@ import { Card, Icon, Descriptions } from 'antd';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { getCategoryListAsync } from '$redux/actions';
+import { getCategoryListAsync } from '$cont/category/store';
 import { reqGetProduct } from '$api';
 import './index.less';
 

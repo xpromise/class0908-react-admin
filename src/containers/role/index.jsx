@@ -6,7 +6,7 @@ import {
   getRoleListAsync,
   addRoleAsync,
   updateRoleAsync
-} from '$redux/actions';
+} from './store';
 
 import AddRoleForm from './add-role-form';
 import UpdateRoleForm from './update-role-form';

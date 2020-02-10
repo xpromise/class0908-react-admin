@@ -14,7 +14,7 @@ import BraftEditor from 'braft-editor';
 import { Link } from 'react-router-dom';
 
 import { connect } from 'react-redux';
-import { getCategoryListAsync } from '$redux/actions';
+import { getCategoryListAsync } from '$cont/category/store';
 import { reqAddProduct, reqUpdateProduct, reqGetProduct } from '$api';
 
 import './index.less';
@@ -143,7 +143,6 @@ class ProductForm extends Component {
 
   // 处理分类id问题
   handleCategoryId = (isAddProduct, product) => {
-
     // 如果是添加商品
     if (isAddProduct) {
       // 暂无分类

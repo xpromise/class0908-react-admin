@@ -8,7 +8,7 @@ import {
   addCategoryAsync,
   updateCategoryAsync,
   deleteCategoryAsync
-} from '$redux/actions';
+} from './store';
 
 @connect(state => ({ categories: state.categories }), {
   getCategoryListAsync,

@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { connect } from 'react-redux';
 
 import { reqGetUser, reqAddUser } from '$api';
-import { getRoleListAsync } from '$redux/actions';
+import { getRoleListAsync } from '$cont/role/store';
 import UserForm from './user-form';
 
 @connect(state => ({ roles: state.roles }), { getRoleListAsync })
