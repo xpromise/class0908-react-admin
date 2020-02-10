@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Card, Button, Icon, Table, Modal, message } from 'antd';
 import { connect } from 'react-redux';
 
@@ -9,6 +9,8 @@ import {
   updateCategoryAsync,
   deleteCategoryAsync
 } from './store';
+
+console.log('category组件被加载了~');
 
 @connect(state => ({ categories: state.categories }), {
   getCategoryListAsync,
@@ -45,14 +47,14 @@ class Category extends Component {
         // console.log(category);
 
         return (
-          <div>
+          <Fragment>
             <Button type='link' onClick={this.showCategoryModal(category)}>
               修改分类
             </Button>
             <Button type='link' onClick={this.delCategory(category)}>
               删除分类
             </Button>
-          </div>
+          </Fragment>
         );
       }
     }

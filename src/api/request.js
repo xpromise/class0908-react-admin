@@ -7,12 +7,24 @@ import { message } from 'antd';
 
 import errCode from '../config/error-code';
 import store from '$redux/store';
-import { removeItem } from '$utils/storage'
+import { removeItem } from '$utils/storage';
 import { removeUser } from '$redux/actions';
+
+/*
+  开发环境：
+    请求地址是 /api/login  --> http://localhost:3000/api/login
+    经过代理服务器处理 --> http://47.103.203.152/api/login 所以访问成功~
+  生产环境
+    请求地址是 /api/login  --> http://localhost:5000/api/login  
+    但是生产环境不能使用代理服务器（没有使用webpack）
+    所以我们需要手动将请求地址改成最终的请求地址
+*/
+const baseURL =
+  process.env.NODE_ENV === 'development' ? '/api' : 'http://47.103.203.152/api';
 
 // 创建axios实例
 const axiosInstance = axios.create({
-  baseURL: '/api', // 公共的请求路径前缀
+  baseURL, // 公共的请求路径前缀
   timeout: 20000, // 请求超时时间
   headers: {
     // 公共请求头参数
@@ -92,7 +104,6 @@ axiosInstance.interceptors.response.use(
         // 错误提示
         message.error('登录过期，请重新登录~');
       }
-
     } else {
       // 没有接受到响应
       // 根据响应message(错误信息)来判断错误类型

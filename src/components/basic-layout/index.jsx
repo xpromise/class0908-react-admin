@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Layout } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import LeftNav from './left-nav';
@@ -12,7 +12,7 @@ import './index.less';
 const { Header, Content, Footer, Sider } = Layout;
 
 @withCheckLogin
-class BasicLayout extends Component {
+class BasicLayout extends PureComponent {
   state = {
     collapsed: false,
     isDisplay: true
@@ -29,6 +29,8 @@ class BasicLayout extends Component {
   render() {
     const { isDisplay, collapsed } = this.state;
     const { children } = this.props;
+
+    
 
     return (
       <Layout style={{ minHeight: '100vh' }}>

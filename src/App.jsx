@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense, PureComponent } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Spin } from 'antd';
 import { IntlProvider } from 'react-intl';
 import Login from './containers/login';
 
 import BasicLayout from './components/basic-layout';
+import ErrorBoundary from './components/error-boundary';
 import { en, zhCN } from './locales';
 import routes from './config/routes';
 
@@ -13,7 +14,43 @@ import zh_CN from 'antd/es/locale/zh_CN';
 import en_US from 'antd/es/locale/en_US';
 
 @connect(state => ({ language: state.language, user: state.user.user }), null)
-class App extends Component {
+class App extends PureComponent {
+  /*
+    PureComponent: 纯组件：
+      内部使用了 shouldComponentUpdate 类似的比较方案 -->
+      根据新旧props和新旧state来判断是否要重新渲染：
+        如果都相等，就不渲染
+        如果有一个不想等，就渲染
+      简单理解： PureComponent 是 shouldComponentUpdate 简写
+      缺点：每次都会对比state和props，并且如果是数据是对象类型，只进行浅比较（只对比对象的第一层属性）
+      问题：如果数据是对象，对象里面还有对象，这个是对比不出来的。
+
+      最终总结：
+        如果数据就是一层属性，就用PureComponent
+        如果数据由多层属性，最好是通过shouldComponentUpdate去更新
+
+        如果能够保证不修改原数据，产生一份新数据，那么也可以直接使用PureComponent
+        (一定注意不能修改原数据：一旦修改原数据，新旧值就一样，更新就失败了~)
+
+      React.memo() 给纯函数组件做性能优化
+        内部实现对新旧props的比较。（为什么不对比state呢？因为纯函数组件没有state）
+        类似于不对比state的PureComponent用法
+
+      优点：减少组件的无效渲染。从而让组件性能更好
+  */
+
+  // shouldComponentUpdate() {
+  //   /*
+  //     根据新旧props和新旧state来判断是否要重新渲染：
+  //       如果都相等，就不渲染
+  //       如果有一个不想等，就渲染
+  //   */
+  //   // 更新
+  //   return true;
+  //   // 不更新
+  //   // return false;
+  // }
+
   render() {
     const { language, user } = this.props;
     const isEn = language === 'en';
@@ -87,15 +124,26 @@ class App extends Component {
           messages={isEn ? en : zhCN} // 选择语言包
         >
           <Router>
-            <Switch>
-              <Route path='/login' exact component={Login} />
-              <BasicLayout>
-                {filterRoutes.map(route => {
-                  // return <Route path={route.path} exact={route.exact} component={route.component} />
-                  return <Route {...route} key={route.path} />;
-                })}
-              </BasicLayout>
-            </Switch>
+            {/* 
+              lazy 必须配合 Suspense 一起使用。（Suspense必须包裹lazy）
+                fallback 属性，组件会采用懒加载，没有加载完成是显示 fallback的值
+                加载完成就会替换成对应的组件
+            */}
+            <Suspense fallback={<Spin size='large' />}>
+              <Switch>
+                <Route path='/login' exact component={Login} />
+                <BasicLayout>
+                  {filterRoutes.map(route => {
+                    // return <Route path={route.path} exact={route.exact} component={route.component} />
+                    return (
+                      <ErrorBoundary key={route.path}>
+                        <Route {...route} />
+                      </ErrorBoundary>
+                    );
+                  })}
+                </BasicLayout>
+              </Switch>
+            </Suspense>
           </Router>
         </IntlProvider>
       </ConfigProvider>

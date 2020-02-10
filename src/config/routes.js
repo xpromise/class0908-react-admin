@@ -1,6 +1,8 @@
-import Home from '../components/home';
-import Category from '../containers/category';
-import Product from '../containers/product';
+import { lazy } from 'react';
+
+// import Home from '../components/home';
+// import Category from '../containers/category';
+// import Product from '../containers/product';
 import ProductForm from '../containers/product/product-form';
 import ProductDetail from '../containers/product/product-detail';
 import Role from '../containers/role';
@@ -11,17 +13,20 @@ import Map from '../components/charts/map';
 const routes = [
   {
     path: '/',
-    component: Home,
+    // component: Home,
+    component: lazy(() => import(/* webpackChunkName: 'home' */'../components/home')),
     exact: true
   },
   {
     path: '/category',
-    component: Category,
+    // component: Category,
+    component: lazy(() => import(/* webpackChunkName: 'category' */'../containers/category')),
     exact: true
   },
   {
     path: '/product',
-    component: Product,
+    // component: Product,
+    component: lazy(() => import(/* webpackChunkName: 'product' */'../containers/product')),
     exact: true
   },
   {

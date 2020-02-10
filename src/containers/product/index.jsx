@@ -7,6 +7,8 @@ import {
   reqUpdateProductStatus
 } from '$api';
 
+console.log('Product组件被加载了~');
+
 export default class Product extends Component {
   state = {
     productList: [],

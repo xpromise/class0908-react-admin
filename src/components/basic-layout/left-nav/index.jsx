@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { Menu, Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -11,7 +11,7 @@ const { SubMenu, Item } = Menu;
 @connect(state => ({ roleMenus: state.user.user.menus }))
 // withRouter 高阶组件：给子组件传递路由组件的三大属性
 @withRouter
-class LeftNav extends Component {
+class LeftNav extends PureComponent {
   createMenus = menus => {
     return menus.map(menu => {
       if (menu.children) {
@@ -231,7 +231,6 @@ class LeftNav extends Component {
               所以需要判断有没有子菜单，有的话需要特殊处理
       */
       if (roleMenus.indexOf(c.path) !== -1 || c.children) {
-
         if (c.children) {
           /*
             如果是二级菜单，判断所有子菜单是否在roleMenus中：
