@@ -170,5 +170,19 @@
 	* Product --> ProductForm..
 	* 可以通过 history.push('/product/update/xxx', 数据)	
 	* 组件内部通过 location.state 获取
-		
 
+## 权限管理
+* 设置用户权限
+	* 权限管理组件完成
+	* 创建角色用户，并设置角色拥有指定的权限
+	* 创建用户账户同时绑定角色，所以便拥有的相应权限
+
+* 当用户登录时，使其设置的权限生效 ***
+	* 对左侧导航进行权限管理 (有权限就能导航访问)
+		* 获取到menus(所有菜单)，获取用户权限roleMenus(redux中user.user.menus)
+		* 通过处理，让menus中只包含用户权限roleMenus中允许访问的菜单
+		* 特殊：深度克隆
+	* 对路由进行权限管理 (用户可能直接输入网址，此时也得进行权限管理)
+		* 获取到routes(所有路由)，获取用户权限roleMenus(redux中user.user.menus)
+		* 通过处理，让routes中只包含用户权限roleMenus中允许访问的菜单
+		* 特殊：可能有一个全新菜单对应多个路由地址

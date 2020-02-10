@@ -70,7 +70,8 @@ class UpdateRoleForm extends Component {
           <TreeNode
             title={<FormattedMessage id={item.title} />}
             key={item.path}
-            dataRef={item}
+            // 过去版本遗留的属性，可以不用设置
+            // dataRef={item}
           >
             {this.renderTreeNodes(item.children)}
           </TreeNode>
