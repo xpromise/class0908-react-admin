@@ -19,28 +19,41 @@ export default class Map extends Component {
       title: {
         text: '疫情地图'
       },
+      // 地图提示框组件。
+      tooltip: {
+        trigger: 'item',
+        formatter: item => {
+          return `省份: ${item.name} <br/> 确诊: ${item.value}`;
+        }
+      },
       // 地图怎么填充数据
       visualMap: {
         // 分段式填充
         type: 'piecewise',
         // 指定如何分段
         pieces: [
-          { min: 10000, color: '#cc0000' }, // 不指定 max，表示 max 为无限大（Infinity）。
-          { min: 1000, max: 10000, color: '#cc3333' },
-          { min: 500, max: 999, color: '#cc6666' },
-          { min: 100, max: 499, color: '#cc9999' },
-          { min: 10, max: 99, color: '#cccccc' },
-          { min: 1, max: 9, color: '#ccffff' }
+          { min: 10000, color: '#5c0011' }, // 不指定 max，表示 max 为无限大（Infinity）。
+          { min: 1000, max: 10000, color: '#a8071a' },
+          { min: 500, max: 999, color: '#f5222d' },
+          { min: 100, max: 499, color: '#ff7875' },
+          { min: 10, max: 99, color: '#ffccc7' },
+          { min: 1, max: 9, color: '#fff1f0' }
         ]
       },
       // 地图数据
       series: [
         {
-          name: '疫情地图',
+          name: '疫情数量',
           type: 'map', // 图表是地图类型
           mapType: 'china', // 自定义扩展图表类型
           label: {
             show: true
+          },
+          roam: 'scale', // 通过鼠标缩放
+          scaleLimit: {
+            // 缩放最小和最大比例
+            min: 1,
+            max: 5
           },
           // 数据  [{name, value}, {name, value}]
           data: data.map(item => {
@@ -69,12 +82,15 @@ export default class Map extends Component {
     echarts.registerMap('china', cityData);
 
     return (
-      <div style={{ width: '100%', height: 600 }}>
-        <ReactEcharts
-          option={this.getOption()}
-          style={{ width: '100%', height: 600 }}
-        />
-      </div>
+      <ReactEcharts
+        option={this.getOption()}
+        style={{ width: '100%', height: 600 }}
+        onEvents={{
+          click: e => {
+            console.log(e.data);
+          }
+        }}
+      />
     );
   }
 }
