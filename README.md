@@ -186,3 +186,10 @@
 		* 获取到routes(所有路由)，获取用户权限roleMenus(redux中user.user.menus)
 		* 通过处理，让routes中只包含用户权限roleMenus中允许访问的菜单
 		* 特殊：可能有一个全新菜单对应多个路由地址
+
+## 图形图表
+* 使用puppeteer爬取数据
+	* class0908仓库 puppeteer
+	* 最终得到包含城市数据的 json 文件	
+* 在React中使用echarts	
+	* echarts-for-react / echarts
